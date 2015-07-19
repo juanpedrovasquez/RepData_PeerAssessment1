@@ -1,6 +1,11 @@
-# Reproducible Research: Peer Assessment 1
-Juan Pedro Vasquez  
-July 18, 2015  
+---
+title: "Reproducible Research: Peer Assessment 1"
+author: "Juan Pedro Vasquez"
+date: "July 18, 2015"
+output: 
+  html_document: 
+    keep_md: yes
+---
 
 ## Loading and preprocessing the data
 1. Unzips the raw data file and loads the csv file into R
@@ -62,7 +67,7 @@ byDay <- aggregate(d$steps,list(day=d$date),sum) #summarizes by day
 hist(byDay$x,main = "Total number of steps by day", xlab = "")
 ```
 
-![](PA1_template_files/figure-html/stepsPerDay-1.png) 
+![plot of chunk stepsPerDay](figure/stepsPerDay-1.png) 
 
 2. Mean and median total number of steps taken by day.
 
@@ -109,7 +114,7 @@ plot(byInterval$interval,byInterval$x,type = "l", ylab = "steps", xlab = "Interv
 abline(meanSteps,0,lwd=2,col="blue",lty=3) #highlights such mean
 ```
 
-![](PA1_template_files/figure-html/dailyActPattPlot-1.png) 
+![plot of chunk dailyActPattPlot](figure/dailyActPattPlot-1.png) 
 
 2. The 5-minute interval with maximum number of steps is
 
@@ -180,7 +185,7 @@ byDayProcessed <- aggregate(processedData$steps,list(day=processedData$date),sum
 hist(byDayProcessed$x,main = "Mean total number of steps by day (Processed Data)", xlab = "")
 ```
 
-![](PA1_template_files/figure-html/stepsPerDayProcessed-1.png) 
+![plot of chunk stepsPerDayProcessed](figure/stepsPerDayProcessed-1.png) 
 
 5. Mean and median of total number of steps by day (processed data)
 
@@ -260,7 +265,7 @@ plot(byIntervalMeanFullProcessedWkEnd$interval, byIntervalMeanFullProcessedWkEnd
 plot(byIntervalMeanFullProcessedWkDay$interval, byIntervalMeanFullProcessedWkDay$x, type = "l", ylab="steps", xlab = "interval", main="Average activity for weekdays")
 ```
 
-![](PA1_template_files/figure-html/ploFullProcWkDay-1.png) 
+![plot of chunk ploFullProcWkDay](figure/ploFullProcWkDay-1.png) 
 
 
 
