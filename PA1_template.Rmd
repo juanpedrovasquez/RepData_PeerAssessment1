@@ -1,24 +1,120 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Juan Pedro Vasquez"
+date: "July 18, 2015"
+output: html_document
 ---
-
+## Setting global options
+For all the R chunks in this documents, sets some default options.
+```{r setupGlobalOps}
+library(knitr) #loads the knitr library
+opts_knit$set(echo=TRUE, cache=TRUE) #enables code visibility and cache
+```
 
 ## Loading and preprocessing the data
+1. Unzips the raw data file and loads the csv file into R
+```{r loadData}
+unzip("activity.zip") #unzips raw data file
+rawData <- read.csv("activity.csv")  #loads csv
+dim(rawData)
+head(rawData)
+```
 
-
+2. Avoids the NA values in *steps* column
+```{r noNAs}
+d <- rawData[complete.cases(rawData),] #avoids NA values
+dim(d)
+head(d)
+```
 
 ## What is mean total number of steps taken per day?
+1. An aggregation function is needed to sum up the steps taken each day.
+```{r stepsPerDay}
+byDay <- aggregate(d$steps,list(day=d$date),sum) #summarizes by day
+hist(byDay$x,main = "Total number of steps by day", xlab = "")
+```
 
+2. Mean and median total number of steps taken by day.
+```{r meanMedianStepsPerDay}
+meanStepsByDay <- mean(byDay$x)
+medianStepsByDay <- median(byDay$x) 
+meanStepsByDay
+medianStepsByDay
+```
 
 
 ## What is the average daily activity pattern?
+1. With a subtle change in the same aggregation function, now the steps may be summarized by intervals.
+```{r dailyActPatt}
+byInterval <- aggregate(d$steps,list(interval=d$interval),sum) #summarizes by interval
+```
 
+The mean steps by interval is 
+```{r meanStepsInter} 
+meanSteps <- mean(byInterval$x) #mean steps by intervals 
+meanSteps
+```
+Thus it can be plotted like this.
+```{r dailyActPattPlot}
+plot(byInterval$interval,byInterval$x,type = "l", ylab = "steps", xlab = "Interval", main="Total number of steps by interval") #line plot
+abline(meanSteps,0,lwd=2,col="blue",lty=3) #highlights such mean
+```
 
+2. The 5-minute interval with maximum number of steps is
+```{r dailyActPattMax}
+maxbyInterval <- byInterval[byInterval$x==max(byInterval$x),1]
+maxbyInterval
+```
 
 ## Imputing missing values
+1. There are some NA values in raw data in *steps* column. The number of rows with missing values is:
+```{r howManyNA}
+dNa <- rawData[is.na(rawData$steps), ] #consider only NA values
+rowsMissingValues <- dim(dNa)[1] #number of rows with NA values
+rowsMissingValues
+``` 
+
+2. So those NA values may be replaced with the mean steps of each correspondent interval.
+
++ Taking the mean steps by interval
+
++ Merging it with the correspondent NA value steps
+
++ Reordering and renaming the columns
+
+```{r naReplace}
+byIntervalMean <- aggregate(d$steps,list(interval=d$interval),mean) 
+dNaSolved <- merge(dNa,byIntervalMean,by = "interval")[,c(4,3,1)]
+names(dNaSolved) <- c("steps", "date", "interval")
+head(dNaSolved)
+```
+
+3. Creates a new dataset that is equal to the original dataset but with the
+missing data filled in.
+```{r processedData} 
+processedData <- rbind(d,dNaSolved)
+dim(processedData)
+```
+
+4. Taking again the total number of steps by day, but now with these processed data.
+```{r stepsPerDayProcessed}
+byDayProcessed <- aggregate(processedData$steps,list(day=processedData$date),sum) #summarizes by day
+hist(byDayProcessed$x,main = "Total number of steps by day (Processed Data)", xlab = "")
+```
+
+5. Mean and median of total number of steps by day (processed data)
+```{r meanMedianStepsPerDayProcessed}
+meanStepsByDayProcessed <- mean(byDayProcessed$x)
+medianStepsByDayProcessed <- median(byDayProcessed$x) 
+meanStepsByDayProcessed
+medianStepsByDayProcessed
+```
+
+As can be seen, there is not a big change in results when the missing values are taken in count. The histogram is very similar and also are the mean and median.
+
+
+
+
 
 
 
