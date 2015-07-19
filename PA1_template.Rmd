@@ -8,7 +8,7 @@ output: html_document
 For all the R chunks in this documents, sets some default options.
 ```{r setupGlobalOps}
 library(knitr) #loads the knitr library
-opts_knit$set(echo=TRUE, cache=TRUE) #enables code visibility and cache
+opts_chunk$set(echo=TRUE, cache=TRUE, fig.path='figures/') 
 ```
 
 ## Loading and preprocessing the data
@@ -46,7 +46,7 @@ medianStepsByDay
 ## What is the average daily activity pattern?
 1. With a subtle change in the same aggregation function, now the steps may be summarized by intervals.
 ```{r dailyActPatt}
-byInterval <- aggregate(d$steps,list(interval=d$interval),sum) #summarizes by interval
+byInterval <- aggregate(d$steps,list(interval=d$interval),mean) #summarizes by interval
 ```
 
 The mean steps by interval is 
@@ -56,7 +56,7 @@ meanSteps
 ```
 Thus it can be plotted like this.
 ```{r dailyActPattPlot}
-plot(byInterval$interval,byInterval$x,type = "l", ylab = "steps", xlab = "Interval", main="Total number of steps by interval") #line plot
+plot(byInterval$interval,byInterval$x,type = "l", ylab = "steps", xlab = "Interval", main="Mean total number of steps by interval") #line plot
 abline(meanSteps,0,lwd=2,col="blue",lty=3) #highlights such mean
 ```
 
@@ -99,7 +99,7 @@ dim(processedData)
 4. Taking again the total number of steps by day, but now with these processed data.
 ```{r stepsPerDayProcessed}
 byDayProcessed <- aggregate(processedData$steps,list(day=processedData$date),sum) #summarizes by day
-hist(byDayProcessed$x,main = "Total number of steps by day (Processed Data)", xlab = "")
+hist(byDayProcessed$x,main = "Mean total number of steps by day (Processed Data)", xlab = "")
 ```
 
 5. Mean and median of total number of steps by day (processed data)
@@ -113,9 +113,44 @@ medianStepsByDayProcessed
 As can be seen, there is not a big change in results when the missing values are taken in count. The histogram is very similar and also are the mean and median.
 
 
-
-
-
-
-
 ## Are there differences in activity patterns between weekdays and weekends?
+1. Identifying weekdays
+```{r wkdys}
+wkdys <- as.factor(weekdays(as.Date(processedData$date)))
+fullprocessed <- cbind(processedData, wkdys)
+head(fullprocessed)
+```
+
+2. Separating the processed data in weekdays and weekends
+```{r fullProcWkdys}
+fullProcWeekEnd <- fullprocessed[wkdys==c("Saturday","Sunday"),]
+dim(fullProcWeekEnd)
+fullProcWeekDay <- fullprocessed[wkdys!=c("Saturday","Sunday"),]
+dim(fullProcWeekDay)
+```
+
+3. Plotting mean activity for weekends
+```{r ploFullProcWkEnd}
+byIntervalMeanFullProcessedWkEnd <- aggregate(fullProcWeekEnd$steps, list(interval=fullProcWeekEnd$interval),mean)
+
+
+```
+
+4. Plotting mean activity for weekdays
+```{r ploFullProcWkDay}
+byIntervalMeanFullProcessedWkDay <- aggregate(fullProcWeekDay$steps, list(interval=fullProcWeekDay$interval),mean)
+###
+par(mfrow=c(1,2))
+plot(byIntervalMeanFullProcessedWkEnd$interval, byIntervalMeanFullProcessedWkEnd$x, type = "l", ylab="steps", xlab = "interval", main="Average activity for weekends")
+plot(byIntervalMeanFullProcessedWkDay$interval, byIntervalMeanFullProcessedWkDay$x, type = "l", ylab="steps", xlab = "interval", main="Average activity for weekdays")
+
+```
+
+
+
+
+
+
+
+
+
