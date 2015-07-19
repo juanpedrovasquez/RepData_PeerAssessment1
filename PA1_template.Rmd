@@ -8,7 +8,7 @@ output: html_document
 For all the R chunks in this documents, sets some default options.
 ```{r setupGlobalOps}
 library(knitr) #loads the knitr library
-opts_chunk$set(echo=TRUE, cache=TRUE, fig.path='figures/') 
+opts_chunk$set(echo=TRUE, cache=TRUE)#, fig.path='figures/') 
 ```
 
 ## Loading and preprocessing the data
